@@ -22,7 +22,10 @@
   --radius:24px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{
+  min-height:100%;
+  height:auto;
+}
 body{
   margin:0;
   font-family:Inter,Segoe UI,Arial,sans-serif;
@@ -32,7 +35,9 @@ body{
     radial-gradient(circle at 85% 12%, rgba(139,92,246,.18), transparent 24%),
     radial-gradient(circle at 70% 80%, rgba(56,227,158,.12), transparent 20%),
     linear-gradient(180deg,#08101d 0%,#060912 100%);
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 body::before{
   content:"";
@@ -64,13 +69,12 @@ button:disabled{opacity:.45; cursor:not-allowed}
 #app{
   min-height:100%;
   padding:16px;
-  display:flex;
-  align-items:stretch;
-  justify-content:center;
+  display:block;
 }
 .shell{
   width:min(1500px,100%);
   min-height:calc(100vh - 32px);
+  margin:0 auto;
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -126,12 +130,12 @@ button:disabled{opacity:.45; cursor:not-allowed}
   display:grid;
   grid-template-columns:1.14fr .86fr;
   gap:14px;
-  min-height:0;
+  min-height:auto;
 }
 .panel{
   border-radius:26px;
   padding:18px;
-  min-height:0;
+  min-height:auto;
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -247,8 +251,8 @@ button:disabled{opacity:.45; cursor:not-allowed}
   gap:10px;
 }
 .groups-grid{
-  flex:1;
-  overflow:auto;
+  flex:unset;
+  overflow:visible;
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:12px;
@@ -307,7 +311,7 @@ button:disabled{opacity:.45; cursor:not-allowed}
 .start-wrap,.result-wrap,.final-wrap{
   flex:1;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:center;
 }
 .start-card,.result-card,.final-card{
@@ -562,7 +566,6 @@ function resetLotState(){
   state.leaderIndex = null;
 }
 
-
 function getLeaderIndex(){
   let best = null;
   state.groups.forEach((g, index) => {
@@ -616,6 +619,7 @@ function startAuction(){
   resetLotState();
   state.screen = 'auction';
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function finishLot(force = false){
@@ -654,12 +658,14 @@ function finishLot(force = false){
     state.screen = 'result';
   }
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function nextLot(){
   if (state.currentLotIndex >= lots.length - 1) {
     state.screen = 'final';
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
   state.currentLotIndex += 1;
@@ -667,11 +673,13 @@ function nextLot(){
   resetLotState();
   state.screen = 'auction';
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function restartAuction(){
   initStart();
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function updateGroupCount(value){
@@ -938,7 +946,6 @@ function renderResult(){
             </div>
             <div class="badge-row">
               <div class="badge"><span>Продано</span><strong>${soldProgress()}</strong></div>
-              
             </div>
           </div>
           <div class="balance-board">${resultBalanceBoard()}</div>
@@ -1039,7 +1046,6 @@ function render(){
     app.innerHTML = renderFinal();
   }
 }
-
 
 window.bid = bid;
 window.passGroup = passGroup;
