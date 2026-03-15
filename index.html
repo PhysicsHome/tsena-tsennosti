@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Цена ценностей</title>
+<style>
+:root{
+  --bg:#070b14;
+  --panel:rgba(17,24,39,.78);
+  --panel-strong:rgba(12,19,33,.92);
+  --line:rgba(115,146,255,.22);
+  --line-strong:rgba(106,231,255,.45);
+  --text:#eef4ff;
+  --muted:#a7b5d1;
+  --accent:#69e7ff;
+  --accent-2:#8b5cf6;
+  --good:#38e39e;
+  --warn:#ffcc66;
+  --danger:#ff6b8a;
+  --shadow:0 24px 60px rgba(0,0,0,.45);
+  --radius:24px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(105,231,255,.16), transparent 22%),
+    radial-gradient(circle at 85% 12%, rgba(139,92,246,.18), transparent 24%),
+    radial-gradient(circle at 70% 80%, rgba(56,227,158,.12), transparent 20%),
+    linear-gradient(180deg,#08101d 0%,#060912 100%);
+  overflow:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.15));
+  pointer-events:none;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 22%,transparent 78%,rgba(255,255,255,.03));
+  pointer-events:none;
+}
+button,select,input{font:inherit}
+button{
+  border:none;
+  cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease, background .18s ease;
+}
+button:hover:not(:disabled){transform:translateY(-1px)}
+button:active:not(:disabled){transform:translateY(1px) scale(.99)}
+button:disabled{opacity:.45; cursor:not-allowed}
+#app{
+  min-height:100%;
+  padding:16px;
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+}
+.shell{
+  width:min(1500px,100%);
+  min-height:calc(100vh - 32px);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.glass{
+  background:linear-gradient(180deg, rgba(17,24,39,.82), rgba(10,15,27,.92));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+}
+.header{
+  border-radius:28px;
+  padding:16px 18px;
+  display:flex;
+  gap:14px;
+  align-items:center;
+  justify-content:space-between;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.kicker{
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-size:12px;
+}
+.title{
+  font-size:clamp(28px,5vw,50px);
+  font-weight:800;
+  line-height:1.02;
+}
+.subtitle{color:var(--muted); font-size:clamp(13px,2vw,18px); max-width:780px}
+.badge-row{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-end}
+.badge{
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(6,11,22,.72);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text);
+  min-height:46px;
+}
+.badge strong{font-size:clamp(16px,2.2vw,22px)}
+.timer{min-width:138px; justify-content:center}
+.timer strong{font-variant-numeric:tabular-nums}
+.main{
+  flex:1;
+  display:grid;
+  grid-template-columns:1.14fr .86fr;
+  gap:14px;
+  min-height:0;
+}
+.panel{
+  border-radius:26px;
+  padding:18px;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.controls-top{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.btn{
+  min-height:50px;
+  padding:0 18px;
+  border-radius:16px;
+  font-weight:700;
+  letter-spacing:.01em;
+  color:var(--text);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.btn.primary{
+  background:linear-gradient(180deg, rgba(105,231,255,.22), rgba(105,231,255,.08));
+  border-color:rgba(105,231,255,.35);
+  box-shadow:0 12px 36px rgba(105,231,255,.14), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.btn.accent{
+  background:linear-gradient(180deg, rgba(139,92,246,.28), rgba(139,92,246,.12));
+  border-color:rgba(139,92,246,.36);
+}
+.btn.ghost{background:rgba(255,255,255,.04)}
+.btn.danger{
+  background:linear-gradient(180deg, rgba(255,107,138,.26), rgba(255,107,138,.1));
+  border-color:rgba(255,107,138,.35);
+}
+.hero-card{
+  position:relative;
+  flex:1;
+  padding:24px;
+  border-radius:30px;
+  background:
+    radial-gradient(circle at top right, rgba(105,231,255,.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(139,92,246,.16), transparent 34%),
+    linear-gradient(180deg, rgba(16,24,43,.88), rgba(9,14,26,.96));
+  border:1px solid rgba(105,231,255,.24);
+  overflow:hidden;
+}
+.hero-card::after{
+  content:"";
+  position:absolute;
+  inset:auto -20% -35% auto;
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(105,231,255,.22), rgba(105,231,255,0));
+  filter:blur(10px);
+}
+.lot-number{
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:13px;
+}
+.lot-title{
+  margin-top:10px;
+  font-size:clamp(34px,4.3vw,64px);
+  font-weight:900;
+  line-height:1;
+}
+.lot-subtitle{
+  margin-top:8px;
+  font-size:clamp(16px,2vw,24px);
+  color:#cfe8ff;
+}
+.lot-desc{
+  margin-top:18px;
+  max-width:740px;
+  color:var(--muted);
+  font-size:clamp(15px,1.5vw,20px);
+  line-height:1.5;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.stat{
+  border-radius:20px;
+  padding:16px;
+  border:1px solid var(--line);
+  background:rgba(8,13,24,.7);
+}
+.stat-label{color:var(--muted); font-size:13px; margin-bottom:8px; letter-spacing:.06em; text-transform:uppercase}
+.stat-value{font-size:clamp(20px,2.8vw,34px); font-weight:800; line-height:1.05}
+.stat-value.small{font-size:clamp(16px,1.8vw,24px)}
+.status-line{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.pill{
+  border-radius:999px;
+  padding:8px 12px;
+  background:rgba(105,231,255,.08);
+  border:1px solid rgba(105,231,255,.22);
+  color:#d5f8ff;
+  font-size:14px;
+}
+.groups-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.groups-grid{
+  flex:1;
+  overflow:auto;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  padding-right:2px;
+}
+.group-card{
+  border-radius:22px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(11,17,31,.86), rgba(8,13,24,.92));
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  min-height:188px;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.group-card.leader{
+  border-color:rgba(105,231,255,.55);
+  box-shadow:0 0 0 1px rgba(105,231,255,.14), 0 12px 36px rgba(105,231,255,.12);
+  transform:translateY(-1px);
+}
+.group-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.group-name{font-size:clamp(20px,2.2vw,28px); font-weight:800}
+.group-tag{font-size:12px; padding:7px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
+.money-row{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.money-box{
+  border-radius:16px;
+  padding:12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+}
+.money-box div:first-child{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.money-box div:last-child{margin-top:6px; font-size:clamp(18px,2vw,26px); font-weight:800}
+.bid-buttons{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.bid-btn{
+  min-height:48px;
+  border-radius:14px;
+  font-weight:800;
+  color:var(--text);
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.08);
+}
+.bid-btn.pass{
+  background:linear-gradient(180deg, rgba(255,107,138,.24), rgba(255,107,138,.08));
+  border-color:rgba(255,107,138,.28);
+}
+.helper{font-size:13px; color:var(--muted)}
+.start-wrap,.result-wrap,.final-wrap{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.start-card,.result-card,.final-card{
+  width:min(1200px,100%);
+  border-radius:34px;
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.start-card{
+  min-height:min(880px, calc(100vh - 32px));
+  justify-content:center;
+  background:
+    radial-gradient(circle at top right, rgba(139,92,246,.2), transparent 32%),
+    radial-gradient(circle at left bottom, rgba(105,231,255,.17), transparent 34%),
+    linear-gradient(180deg, rgba(13,20,35,.9), rgba(7,11,20,.98));
+}
+.start-layout{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+}
+.start-hero{
+  border-radius:28px;
+  padding:24px;
+  border:1px solid rgba(105,231,255,.2);
+  background:rgba(7,12,23,.56);
+}
+.start-hero h1{margin:0; font-size:clamp(44px,7vw,84px); line-height:.95}
+.start-hero p{margin:18px 0 0; color:var(--muted); font-size:clamp(16px,2vw,22px); line-height:1.5; max-width:760px}
+.credit-line{
+  margin-top:26px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.credit-pill{
+  padding:12px 16px;
+  border-radius:18px;
+  border:1px solid rgba(105,231,255,.22);
+  background:rgba(105,231,255,.08);
+  font-weight:700;
+}
+.start-side{
+  border-radius:28px;
+  padding:22px;
+  background:rgba(8,12,23,.72);
+  border:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.field{display:flex; flex-direction:column; gap:10px}
+.field label{font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+.select{
+  min-height:58px;
+  border-radius:18px;
+  padding:0 18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  outline:none;
+}
+.group-preview{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.preview-chip{
+  min-height:58px;
+  border-radius:18px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.preview-chip span:last-child{color:var(--accent); font-weight:800}
+.lots-mini{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.lot-mini{
+  border-radius:18px;
+  padding:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+}
+.lot-mini strong{display:block; font-size:18px; margin-bottom:6px}
+.lot-mini span{color:var(--muted); font-size:14px; line-height:1.45}
+.result-card,.final-card{
+  background:
+    radial-gradient(circle at top left, rgba(105,231,255,.14), transparent 28%),
+    radial-gradient(circle at right bottom, rgba(139,92,246,.18), transparent 30%),
+    linear-gradient(180deg, rgba(13,20,35,.9), rgba(7,11,20,.98));
+}
+.result-top,.final-top{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.result-winner{
+  font-size:clamp(28px,4vw,54px);
+  font-weight:900;
+  line-height:1.03;
+}
+.balance-board{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
+.balance-item{
+  border-radius:20px;
+  padding:16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+}
+.balance-item strong{display:block; font-size:22px; margin-bottom:8px}
+.balance-item span{color:var(--muted)}
+.final-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:16px;
+}
+.summary-table{
+  overflow:auto;
+  border-radius:24px;
+  border:1px solid var(--line);
+}
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:720px;
+}
+.table th,.table td{
+  padding:16px 14px;
+  text-align:left;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.table th{color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.08em; background:rgba(255,255,255,.03)}
+.table td{font-size:15px}
+.cell-win{color:#d8fff2; font-weight:700}
+.cell-empty{color:#6f7f9d}
+.final-side{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.question-card,.message-card{
+  border-radius:22px;
+  padding:18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+}
+.question-card h3,.message-card h3{margin:0 0 12px; font-size:16px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent)}
+.question-card p,.message-card p{margin:0; font-size:clamp(18px,2vw,28px); line-height:1.35}
+.question-list{display:flex; flex-direction:column; gap:10px}
+.question-list div{font-size:18px; line-height:1.35}
+.footer-actions{display:flex; flex-wrap:wrap; gap:10px}
+.fade-in{animation:fade .45s ease both}
+@keyframes fade{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:translateY(0)}}
+@media (max-width: 1120px){
+  .main,.start-layout,.final-grid{grid-template-columns:1fr}
+  .shell{min-height:auto}
+  body{overflow:auto}
+}
+@media (max-width: 860px){
+  #app{padding:12px}
+  .shell{min-height:calc(100vh - 24px)}
+  .header,.panel,.start-card,.result-card,.final-card{padding:16px}
+  .groups-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr}
+  .group-preview,.lots-mini{grid-template-columns:1fr}
+  .bid-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .badge-row{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const lots = [
+  {
+    title: 'Адаптивность',
+    short: 'умение меняться',
+    desc: 'Гибкость мышления, скорость обучения и готовность уверенно входить в новые условия, когда мир меняется быстрее привычных правил.'
+  },
+  {
+    title: 'Адалдық / Честность',
+    short: 'внутренний фильтр',
+    desc: 'Способность сохранять принципы, вызывать доверие и не терять ориентиры, когда выбор становится сложным, а цена решения — высокой.'
+  },
+  {
+    title: 'Эмпатия',
+    short: 'понимание других',
+    desc: 'Умение слышать мотивы людей, замечать контекст и строить взаимодействие так, чтобы команда, лидерство и сотрудничество не были формальностью.'
+  },
+  {
+    title: 'Медиаграмотность',
+    short: 'защита от фейков',
+    desc: 'Навык критически оценивать информацию, распознавать манипуляции и не позволять шуму управлять решениями в цифровой среде.'
+  }
+];
+
+const state = {
+  screen: 'start',
+  groupCount: 4,
+  groups: [],
+  currentLotIndex: 0,
+  soldLots: [],
+  leaderIndex: null,
+  bidOrder: 0,
+  resultData: null
+};
+
+const app = document.getElementById('app');
+
+function makeGroups(count){
+  return Array.from({length: count}, (_, i) => ({
+    name: `Группа ${i + 1}`,
+    balance: 1000,
+    bid: 0,
+    passed: false,
+    lastBidOrder: 0,
+    won: []
+  }));
+}
+
+function initStart(){
+  state.groupCount = 4;
+  state.groups = makeGroups(4);
+  state.currentLotIndex = 0;
+  state.soldLots = [];
+  state.leaderIndex = null;
+  state.bidOrder = 0;
+  state.resultData = null;
+  state.screen = 'start';
+}
+
+function resetLotState(){
+  state.groups.forEach(group => {
+    group.bid = 0;
+    group.passed = false;
+    group.lastBidOrder = 0;
+  });
+  state.leaderIndex = null;
+}
+
+
+function getLeaderIndex(){
+  let best = null;
+  state.groups.forEach((g, index) => {
+    if (g.bid <= 0) return;
+    if (best === null) {
+      best = index;
+      return;
+    }
+    const current = state.groups[best];
+    if (g.bid > current.bid || (g.bid === current.bid && g.lastBidOrder > current.lastBidOrder)) {
+      best = index;
+    }
+  });
+  return best;
+}
+
+function allGroupsActed(){
+  return state.groups.every(g => g.passed || g.bid > 0);
+}
+
+function soldProgress(){
+  return `${state.soldLots.length}/${lots.length}`;
+}
+
+function bid(groupIndex, amount){
+  if (state.screen !== 'auction') return;
+  const group = state.groups[groupIndex];
+  if (!group || group.passed) return;
+  if (group.balance - group.bid < amount) return;
+  group.bid += amount;
+  group.lastBidOrder = ++state.bidOrder;
+  state.leaderIndex = getLeaderIndex();
+  render();
+}
+
+function passGroup(groupIndex){
+  if (state.screen !== 'auction') return;
+  const group = state.groups[groupIndex];
+  if (!group || group.passed) return;
+  group.passed = true;
+  state.leaderIndex = getLeaderIndex();
+  render();
+}
+
+function startAuction(){
+  state.groups = makeGroups(state.groupCount);
+  state.currentLotIndex = 0;
+  state.soldLots = [];
+  state.bidOrder = 0;
+  state.resultData = null;
+  resetLotState();
+  state.screen = 'auction';
+  render();
+}
+
+function finishLot(force = false){
+  if (state.screen !== 'auction') return;
+  if (!force && !allGroupsActed()) return;
+  const lot = lots[state.currentLotIndex];
+  const leaderIndex = getLeaderIndex();
+  state.leaderIndex = leaderIndex;
+  let result;
+  if (leaderIndex !== null) {
+    const winner = state.groups[leaderIndex];
+    winner.balance -= winner.bid;
+    winner.won.push({ title: lot.title, bid: winner.bid });
+    result = {
+      title: lot.title,
+      winnerIndex: leaderIndex,
+      winnerName: winner.name,
+      bid: winner.bid,
+      unsold: false
+    };
+  } else {
+    result = {
+      title: lot.title,
+      winnerIndex: null,
+      winnerName: 'Лот остался без покупателя',
+      bid: 0,
+      unsold: true
+    };
+  }
+  state.soldLots.push(result);
+  state.resultData = result;
+  const lastLot = state.currentLotIndex >= lots.length - 1;
+  if (lastLot) {
+    state.screen = 'final';
+  } else {
+    state.screen = 'result';
+  }
+  render();
+}
+
+function nextLot(){
+  if (state.currentLotIndex >= lots.length - 1) {
+    state.screen = 'final';
+    render();
+    return;
+  }
+  state.currentLotIndex += 1;
+  state.resultData = null;
+  resetLotState();
+  state.screen = 'auction';
+  render();
+}
+
+function restartAuction(){
+  initStart();
+  render();
+}
+
+function updateGroupCount(value){
+  state.groupCount = Number(value);
+  state.groups = makeGroups(state.groupCount);
+  render();
+}
+
+function highestBidText(){
+  const leader = state.leaderIndex !== null ? state.groups[state.leaderIndex] : null;
+  if (!leader) return 'Ставки ещё не сделаны';
+  return `${leader.bid} GC · ${leader.name}`;
+}
+
+function resultBalanceBoard(){
+  return state.groups.map(group => `
+    <div class="balance-item">
+      <strong>${group.name}</strong>
+      <span>Осталось: ${group.balance} GC</span>
+    </div>
+  `).join('');
+}
+
+function getLotTotals(){
+  const totals = Object.fromEntries(lots.map(lot => [lot.title, 0]));
+  state.soldLots.forEach(item => {
+    if (!item.unsold && totals[item.title] !== undefined) totals[item.title] += item.bid;
+  });
+  return totals;
+}
+
+function getDiscussionScenario(){
+  const totals = getLotTotals();
+  const entries = Object.entries(totals);
+  const maxValue = Math.max(...entries.map(([, value]) => value), 0);
+  if (maxValue <= 0) {
+    return {
+      title: 'Вопросы для обсуждения',
+      lead: 'Ни один лот не получил решающего преимущества. Что помешало сделать более смелую ценностную ставку?',
+      questions: [
+        'Какое качество вы бы купили первым, если бы пришлось сделать только одну ставку?',
+        'Что оказалось важнее: стратегическая выгода, моральный ориентир или защита от рисков?',
+        'Какая ценность могла бы стать основой всех остальных?'
+      ]
+    };
+  }
+  const winners = entries.filter(([, value]) => value === maxValue).map(([title]) => title);
+  if (winners.length > 1) {
+    return {
+      title: 'Вопросы при равных приоритетах',
+      lead: `Самыми дорогими для групп оказались сразу несколько ценностей: ${winners.join(' • ')}. Почему вы не захотели делать ставку только на одно качество?`,
+      questions: [
+        'Какие из этих качеств усиливают друг друга, а какие могут вступать в напряжение?',
+        'Если бы бюджет сократился вдвое, какое из них вы оставили бы обязательно?',
+        'О чем говорит такой выбор: вы строите гибкого человека, надежного человека или устойчивого к инфошуму человека?'
+      ]
+    };
+  }
+  const top = winners[0];
+  if (top === 'Адаптивность') {
+    return {
+      title: 'Когда дороже всего Адаптивность',
+      lead: 'Группы выше всего оценили способность быстро меняться. Почему именно гибкость стала главным капиталом будущего?',
+      questions: [
+        'Может ли адаптивность без честности превратиться просто в удобное приспособление к любой ситуации?',
+        'Что в современном мире заставляет вас инвестировать именно в умение быстро переучиваться?',
+        'В какой момент адаптивность перестает быть силой, если у человека нет внутреннего стержня?'
+      ]
+    };
+  }
+  if (top === 'Адалдық / Честность') {
+    return {
+      title: 'Когда дороже всего Честность',
+      lead: 'Самой дорогой ценностью для групп стала честность. Почему внутренний фильтр оказался важнее гибкости и скорости?',
+      questions: [
+        'Почему вы отдали за Честность больше, чем за Адаптивность?',
+        'Можно ли в мире быстрых перемен сохранить доверие без твердой внутренней позиции?',
+        'Что происходит с успехом человека, если он выигрывает быстро, но теряет честность?'
+      ]
+    };
+  }
+  if (top === 'Эмпатия') {
+    return {
+      title: 'Когда дороже всего Эмпатия',
+      lead: 'Группы вложили больше всего в эмпатию. Почему понимание людей стало ресурсом не меньшим, чем технологии и гибкость?',
+      questions: [
+        'Почему в конкурентном мире вы поставили на способность понимать других, а не только на личную эффективность?',
+        'Можно ли быть сильным лидером без эмпатии в команде, школе или обществе?',
+        'Как эмпатия помогает принимать более точные и человечные решения?'
+      ]
+    };
+  }
+  return {
+    title: 'Когда дороже всего Медиаграмотность',
+    lead: 'Самой высокой оказалась ставка на медиаграмотность. Почему защита от фейков и манипуляций стала такой дорогой ценностью?',
+    questions: [
+      'Почему сегодня умение различать правду и шум может стоить дороже адаптивности?',
+      'Может ли человек быть успешным, если он быстро учится, но легко поддается информационным манипуляциям?',
+      'Как медиаграмотность связана с честностью, доверием и ответственностью за свои решения?'
+    ]
+  };
+}
+
+function renderStart(){
+  const preview = state.groups.map(group => `
+    <div class="preview-chip">
+      <span>${group.name}</span>
+      <span>1000 GC</span>
+    </div>
+  `).join('');
+  const lotsMini = lots.map(lot => `
+    <div class="lot-mini">
+      <strong>${lot.title}</strong>
+      <span>${lot.short}</span>
+    </div>
+  `).join('');
+  return `
+    <div class="shell">
+      <div class="start-wrap fade-in">
+        <div class="start-card glass">
+          <div class="start-layout">
+            <div class="start-hero">
+              <div class="kicker">Интерактивный аукцион будущего</div>
+              <h1>Цена ценностей</h1>
+              <p>У каждой группы — 1000 Global Credits. Во что вы инвестируете, чтобы быть конкурентоспособными в мире?</p>
+              <div class="credit-line">
+                <div class="credit-pill">4 лота-качества</div>
+                <div class="credit-pill">6 минут на аукцион</div>
+                <div class="credit-pill">Ставки в реальном времени</div>
+              </div>
+              <div style="height:18px"></div>
+              <div class="lots-mini">${lotsMini}</div>
+            </div>
+            <div class="start-side">
+              <div class="field">
+                <label for="groupCount">Количество групп</label>
+                <select class="select" id="groupCount" onchange="updateGroupCount(this.value)">
+                  ${[2,3,4,5,6].map(n => `<option value="${n}" ${n === state.groupCount ? 'selected' : ''}>${n} группы</option>`).join('')}
+                </select>
+              </div>
+              <div class="field">
+                <label>Автоматические названия групп</label>
+                <div class="group-preview">${preview}</div>
+              </div>
+              <div class="footer-actions">
+                <button class="btn primary" onclick="startAuction()">Начать аукцион</button>
+                <button class="btn ghost" onclick="restartAuction()">Сброс</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAuction(){
+  const lot = lots[state.currentLotIndex];
+  const leader = state.leaderIndex !== null ? state.groups[state.leaderIndex] : null;
+  const finishDisabled = !allGroupsActed();
+  const statusText = allGroupsActed() ? 'Все группы сделали ставку или нажали «Пас». Можно завершать торги.' : 'Дождитесь, пока каждая группа сделает ставку или выберет «Пас».';
+  const groupsMarkup = state.groups.map((group, index) => {
+    const isLeader = state.leaderIndex === index && group.bid > 0;
+    const remaining = group.balance - group.bid;
+    return `
+      <div class="group-card ${isLeader ? 'leader' : ''}">
+        <div class="group-top">
+          <div>
+            <div class="group-name">${group.name}</div>
+            <div class="helper">${group.passed ? 'Статус: пас' : group.bid > 0 ? 'Статус: ставка активна' : 'Статус: ожидание решения'}</div>
+          </div>
+          <div class="group-tag">${isLeader ? 'Лидер торгов' : group.passed ? 'Пас' : 'В игре'}</div>
+        </div>
+        <div class="money-row">
+          <div class="money-box">
+            <div>Баланс</div>
+            <div>${group.balance} GC</div>
+          </div>
+          <div class="money-box">
+            <div>Текущая ставка</div>
+            <div>${group.bid} GC</div>
+          </div>
+        </div>
+        <div class="bid-buttons">
+          <button class="bid-btn" ${group.passed || remaining < 50 ? 'disabled' : ''} onclick="bid(${index},50)">+50</button>
+          <button class="bid-btn" ${group.passed || remaining < 100 ? 'disabled' : ''} onclick="bid(${index},100)">+100</button>
+          <button class="bid-btn" ${group.passed || remaining < 200 ? 'disabled' : ''} onclick="bid(${index},200)">+200</button>
+          <button class="bid-btn pass" ${group.passed ? 'disabled' : ''} onclick="passGroup(${index})">Пас</button>
+        </div>
+        <div class="helper">Доступно для хода: ${remaining} GC</div>
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="shell">
+      <div class="header glass fade-in">
+        <div class="brand">
+          <div class="kicker">Интеллектуальный аукцион ценностей</div>
+          <div class="title">Цена ценностей</div>
+          <div class="subtitle">Группы инвестируют Global Credits в качества, которые делают человека сильнее в мире перемен.</div>
+        </div>
+        <div class="badge-row">
+          <div class="badge"><span>Продано</span><strong>${soldProgress()}</strong></div>
+          <div class="badge"><span>Лот</span><strong>${state.currentLotIndex + 1}/${lots.length}</strong></div>
+        </div>
+      </div>
+      <div class="main fade-in">
+        <div class="panel glass">
+          <div class="controls-top">
+            <button class="btn danger" onclick="restartAuction()">Перезапустить аукцион</button>
+            <button class="btn primary" ${finishDisabled ? 'disabled' : ''} onclick="finishLot(false)">Завершить торги</button>
+            <button class="btn ghost" disabled>Следующий лот</button>
+          </div>
+          <div class="hero-card">
+            <div class="lot-number">Лот ${state.currentLotIndex + 1} из ${lots.length}</div>
+            <div class="lot-title">${lot.title}</div>
+            <div class="lot-subtitle">${lot.short}</div>
+            <div class="lot-desc">${lot.desc}</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-label">Текущая максимальная ставка</div>
+              <div class="stat-value">${leader ? leader.bid + ' GC' : '—'}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Лидер</div>
+              <div class="stat-value small">${leader ? leader.name : 'Пока нет лидера'}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Сводка</div>
+              <div class="stat-value small">${highestBidText()}</div>
+            </div>
+          </div>
+          <div class="status-line">
+            <div class="pill">${statusText}</div>
+          </div>
+        </div>
+        <div class="panel glass">
+          <div class="groups-head">
+            <div>
+              <div class="kicker">Ставки по группам</div>
+              <div class="subtitle">Быстрые кнопки для торгов прямо с экрана</div>
+            </div>
+          </div>
+          <div class="groups-grid">${groupsMarkup}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderResult(){
+  const result = state.resultData;
+  const nextLabel = state.currentLotIndex >= lots.length - 1 ? 'К итогам' : 'Следующий лот';
+  return `
+    <div class="shell">
+      <div class="result-wrap fade-in">
+        <div class="result-card glass">
+          <div class="result-top">
+            <div>
+              <div class="kicker">Результат торгов</div>
+              <div class="result-winner">${result.unsold ? 'Лот не был куплен' : `${result.winnerName} покупает «${result.title}»`}</div>
+              <div class="subtitle" style="margin-top:12px">${result.unsold ? 'Ни одна группа не вложила Global Credits в этот лот.' : `Финальная ставка: ${result.bid} Global Credits`}</div>
+            </div>
+            <div class="badge-row">
+              <div class="badge"><span>Продано</span><strong>${soldProgress()}</strong></div>
+              
+            </div>
+          </div>
+          <div class="balance-board">${resultBalanceBoard()}</div>
+          <div class="footer-actions">
+            <button class="btn primary" onclick="nextLot()">${nextLabel}</button>
+            <button class="btn danger" onclick="restartAuction()">Перезапустить аукцион</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderFinal(){
+  const rows = state.groups.map(group => {
+    const cells = lots.map(lot => {
+      const found = group.won.find(item => item.title === lot.title);
+      return found ? `<td class="cell-win">${found.bid} GC</td>` : `<td class="cell-empty">—</td>`;
+    }).join('');
+    const wonTitles = group.won.length ? group.won.map(item => item.title).join(' • ') : '—';
+    return `
+      <tr>
+        <td><strong>${group.name}</strong></td>
+        ${cells}
+        <td>${wonTitles}</td>
+        <td><strong>${group.balance} GC</strong></td>
+      </tr>
+    `;
+  }).join('');
+  const scenario = getDiscussionScenario();
+  return `
+    <div class="shell">
+      <div class="final-wrap fade-in">
+        <div class="final-card glass">
+          <div class="final-top">
+            <div>
+              <div class="kicker">Финал аукциона</div>
+              <div class="result-winner">Итоги инвестиции в качества будущего</div>
+              <div class="subtitle" style="margin-top:12px">Какие ценности группы сочли наиболее важными для конкурентоспособности в современном мире?</div>
+            </div>
+            <div class="badge-row">
+              <div class="badge"><span>Продано</span><strong>${soldProgress()}</strong></div>
+            </div>
+          </div>
+          <div class="final-grid">
+            <div class="summary-table">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Группа</th>
+                    <th>Адаптивность</th>
+                    <th>Адалдық / Честность</th>
+                    <th>Эмпатия</th>
+                    <th>Медиаграмотность</th>
+                    <th>Купленные лоты</th>
+                    <th>Остаток</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows}
+                </tbody>
+              </table>
+            </div>
+            <div class="final-side">
+              <div class="question-card">
+                <h3>${scenario.title}</h3>
+                <p>${scenario.lead}</p>
+              </div>
+              <div class="question-card">
+                <h3>Адаптивные вопросы</h3>
+                <div class="question-list">
+                  ${scenario.questions.map(question => `<div>${question}</div>`).join('')}
+                </div>
+              </div>
+              <div class="message-card">
+                <h3>Финальная мысль</h3>
+                <p>В глобальном мире побеждает не только тот, кто быстро меняется, но и тот, кто стоит на сильных ценностях.</p>
+              </div>
+            </div>
+          </div>
+          <div class="footer-actions">
+            <button class="btn primary" onclick="restartAuction()">Новый аукцион</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render(){
+  if (state.screen === 'start') {
+    app.innerHTML = renderStart();
+  } else if (state.screen === 'auction') {
+    app.innerHTML = renderAuction();
+  } else if (state.screen === 'result') {
+    app.innerHTML = renderResult();
+  } else {
+    app.innerHTML = renderFinal();
+  }
+}
+
+
+window.bid = bid;
+window.passGroup = passGroup;
+window.startAuction = startAuction;
+window.finishLot = finishLot;
+window.nextLot = nextLot;
+window.restartAuction = restartAuction;
+window.updateGroupCount = updateGroupCount;
+
+initStart();
+render();
+</script>
+</body>
+</html>
